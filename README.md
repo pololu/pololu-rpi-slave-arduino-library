@@ -1,5 +1,12 @@
 # Raspberry Pi slave library for Arduino
 
+Version: 1.0.0<br>
+Release date: 2016 February 16<br>
+[www.pololu.com](https://www.pololu.com/)
+
+Summary
+-------
+
 This is an Arduino library that helps establish I<sup>2</sup>C communication with
 a Raspberry Pi, with the Arduino acting as the I<sup>2</sup>C slave.  It should
 work with most Arduino-compatible boards, but we designed it for use
@@ -46,3 +53,8 @@ we have slowed down reads significantly.
 | --------- | --------- | ---------- |
 | 100 kHz   | 21 kbit/s | 53 kbit/s  |
 | 400 kHz   | 43 kbit/s | 140 kbit/s |
+
+Version history
+---------------
+
+* 1.0.0 (2016 Feb 16): Original release.
