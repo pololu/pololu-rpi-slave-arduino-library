@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta content='width=device-width, initial-scale=1' name='viewport'>
+<link rel="stylesheet" media="all" href="static/main.css">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="static/script.js?7"></script>
+
+<title>Raspberry Pi Robot Control Panel</title>
+</head>
+
+<body onload="init();">
+
+<div id="container">
+
+<h1>Raspberry Pi Robot Control Panel</h1>
+
+<p><a href="/halt" onClick="return shutdown()">Shutdown...</a></p>
+
+<table>
+<tr>
+<th>Buttons</th>
+<td class="center" id="button0"></td>
+<td class="center" id="button1"></td>
+<td class="center" id="button2"></td>
+</tr>
+
+<tr><th>LEDs</th>
+<td class="center"><input type="checkbox" id="led0" onchange="setLeds()"></td>
+<td class="center"><input type="checkbox" id="led1" onchange="setLeds()"></td>
+<td class="center"><input type="checkbox" id="led2" onchange="setLeds()"></td>
+</tr>
+</table>
+
+<p>
+<input type="text" id="notes" maxlength="14" value="l16ceg>c">
+<button onclick="playNotes()">Play</button>
+</p>
+
+<table>
+<tr><th>Battery</th><td class="wide"><span id="battery_millivolts"></span> mV</td></tr>
+</table>
+
+<table>
+<tr>
+<th rowspan=2>Analog</th>
+<td id="analog0"></td><td id="analog1"></td><td id="analog2"></td>
+</tr>
+<tr>
+<td id="analog3"></td>
+<td id="analog4"></td><td id="analog5"></td>
+</tr>
+</table>
+
+<div id="joystick">
+</div>
+
+</div>
+
+</html>

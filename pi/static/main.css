@@ -1,0 +1,61 @@
+html {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+input, button {
+  font-size: 1rem;
+}
+
+#container {
+  display: inline-block;
+  max-width: 600px;
+  padding: 0.5em;
+}
+
+h1 {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 0.5em;
+}
+
+td,th {
+  width: 3em;
+  text-align: right;
+}
+
+td.center {
+  text-align: center;
+}
+
+td.wide {
+  width: 5em;
+}
+
+table {
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+table td, table th {
+  border: 1px solid black;
+  padding: 0.5em;
+}
+
+#joystick {
+  border: 1px solid black;
+  background-color: gray;
+  width: 14em;
+  height: 14em;
+  margin-left: auto;
+  margin-right: auto;
+}
