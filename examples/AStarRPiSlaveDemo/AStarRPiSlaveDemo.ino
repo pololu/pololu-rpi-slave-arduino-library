@@ -72,7 +72,7 @@ void loop()
     slave.buffer.analog[i] = analogRead(i);
   }
 
-  // READING the buffer is allowed before or after finishWrites().
+  // READING the buffer is allowed before or after finalizeWrites().
   ledYellow(slave.buffer.yellow);
   ledGreen(slave.buffer.green);
   ledRed(slave.buffer.red);
