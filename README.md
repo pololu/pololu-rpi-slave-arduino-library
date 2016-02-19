@@ -39,7 +39,9 @@ robot from your smartphone or computer.
 Getting started
 ---------------
 
-A complete tutorial will be available soon.
+See [this blog post](https://www.pololu.com/blog/577/building-a-raspberry-pi-robot-with-the-a-star-32u4-robot-controller)
+for a complete tutorial including step-by-step build instructions for
+an example robot.
 
 Benchmarking
 ------------
