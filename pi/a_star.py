@@ -1,6 +1,7 @@
 # Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
 import smbus
 import struct
+import time
 
 class AStar(object):
   def __init__(self):
@@ -13,8 +14,12 @@ class AStar(object):
     # since the STOP interrupt will occasionally happen after the START
     # condition, and the TWI module is disabled until the interrupt can
     # be processed.
+    #
+    # A delay of 0.0001 (100 us) after each write is enough to account
+    # for the worst-case situation in our example code.
 
     self.bus.write_byte(20,address)
+    time.sleep(0.0001)
     byte_list = []
     for n in range(0,size):
       byte_list.append(self.bus.read_byte(20))
@@ -23,6 +28,7 @@ class AStar(object):
   def write_pack(self, address, format, *data):
     data_array = map(ord, list(struct.pack(format, *data)))
     self.bus.write_i2c_block_data(20, address, data_array)
+    time.sleep(0.0001)
 
   def leds(self, red, yellow, green):
     self.write_pack(0, 'BBB', red, yellow, green)
@@ -47,3 +53,4 @@ class AStar(object):
 
   def test_write8(self):
     self.bus.write_i2c_block_data(20, 0, [0,0,0,0,0,0,0,0])
+    time.sleep(0.0001)

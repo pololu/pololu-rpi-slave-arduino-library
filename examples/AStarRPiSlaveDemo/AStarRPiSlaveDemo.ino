@@ -37,7 +37,7 @@ struct Data
   char notes[14];
 };
 
-PololuRPiSlave<struct Data,0> slave;
+PololuRPiSlave<struct Data,5> slave;
 PololuBuzzer buzzer;
 AStar32U4Motors motors;
 AStar32U4ButtonA buttonA;

@@ -11,7 +11,9 @@
  *
  * The second template parameter, pi_delay_us, specifies the delay.
  * We recommend a value of 10 for an I2C speed of 100 kHz or a value
- * of 0 for 400 kHz.
+ * of 0 for 400 kHz. However, on the Pi 3, CPU scaling will cause I2C
+ * to run at half the speed; in this case we recommend values of 20 or
+ * 5.
  *
  * Additionally, it implements a system of buffers allowing user code
  * and the I2C system to read and write asynchronously from the same
