@@ -1,7 +1,7 @@
 # Raspberry Pi slave library for Arduino
 
-Version: 1.0.0<br>
-Release date: 2016 February 16<br>
+Version: 1.0.1<br>
+Release date: 2017 January 23<br>
 [![Build Status](https://travis-ci.org/pololu/pololu-rpi-slave-arduino-library.svg?branch=master)](https://travis-ci.org/pololu/pololu-rpi-slave-arduino-library)<br>
 [www.pololu.com](https://www.pololu.com/)
 
@@ -60,4 +60,5 @@ we have slowed down reads significantly.
 Version history
 ---------------
 
+* 1.0.1 (2017 Jan 23): Added and adjusted delays necessary for reliable operation on the Pi 3.
 * 1.0.0 (2016 Feb 16): Original release.
