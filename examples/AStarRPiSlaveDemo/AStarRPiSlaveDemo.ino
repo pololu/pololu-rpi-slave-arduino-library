@@ -35,6 +35,9 @@ struct Data
 
   bool playNotes;
   char notes[14];
+  
+  // Encoders are unused in this example.
+  int16_t leftEncoder, rightEncoder;
 };
 
 PololuRPiSlave<struct Data,5> slave;
