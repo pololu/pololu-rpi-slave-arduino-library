@@ -26,7 +26,7 @@ class AStar(object):
     return struct.unpack(format,bytes(bytearray(byte_list)))
 
   def write_pack(self, address, format, *data):
-    data_array = map(ord, list(struct.pack(format, *data)))
+    data_array = list(struct.pack(format, *data))
     self.bus.write_i2c_block_data(20, address, data_array)
     time.sleep(0.0001)
 
