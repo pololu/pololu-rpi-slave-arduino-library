@@ -2,12 +2,12 @@
 #include <Romi32U4.h>
 #include <PololuRPiSlave.h>
 
-/* This example program shows how to make the A-Star 32U4 Robot
- * Controller into a Raspberry Pi I2C slave.  The RPi and A-Star can
+/* This example program shows how to make the Romi 32U4 Control Board 
+ * into a Raspberry Pi I2C slave.  The RPi and Romi 32U4 Control Board can
  * exchange data bidirectionally, allowing each device to do what it
  * does best: high-level programming can be handled in a language such
- * as Python on the RPi, while the A-Star takes charge of motor
- * control, analog inputs, and other low-level I/O.
+ * as Python on the RPi, while the Romi 32U4 Control Board takes charge 
+ * of motor control, analog inputs, and other low-level I/O.
  *
  * The example and libraries are available for download at:
  *

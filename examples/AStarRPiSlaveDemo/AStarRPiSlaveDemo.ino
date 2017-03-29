@@ -83,11 +83,17 @@ void loop()
 
   // Playing music involves both reading and writing, since we only
   // want to do it once.
-  if(slave.buffer.playNotes)
+  static bool startedPlaying = false;
+  
+  if(slave.buffer.playNotes && !startedPlaying)
   {
     buzzer.play(slave.buffer.notes);
-    while(buzzer.isPlaying());
+    startedPlaying = true;
+  }
+  else if (startedPlaying && !buzzer.isPlaying())
+  {
     slave.buffer.playNotes = false;
+    startedPlaying = false;
   }
 
   // When you are done WRITING, call finalizeWrites() to make modified
