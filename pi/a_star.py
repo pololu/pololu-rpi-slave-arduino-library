@@ -3,7 +3,7 @@ import smbus
 import struct
 import time
 
-class AStar(object):
+class AStar:
   def __init__(self):
     self.bus = smbus.SMBus(1)
 
