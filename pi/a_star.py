@@ -20,9 +20,7 @@ class AStar(object):
 
     self.bus.write_byte(20, address)
     time.sleep(0.0001)
-    byte_list = []
-    for n in range(0,size):
-      byte_list.append(self.bus.read_byte(20))
+    byte_list = [self.bus.read_byte(20) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
 
   def write_pack(self, address, format, *data):
