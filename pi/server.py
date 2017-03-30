@@ -26,10 +26,12 @@ def status():
     buttons = a_star.read_buttons()
     analog = a_star.read_analog()
     battery_millivolts = a_star.read_battery_millivolts()
+    encoders = a_star.read_encoders()
     data = {
         "buttons": buttons,
         "battery_millivolts": battery_millivolts,
-        "analog": analog
+        "analog": analog,
+        "encoders": encoders
     }
     return json.dumps(data)
 

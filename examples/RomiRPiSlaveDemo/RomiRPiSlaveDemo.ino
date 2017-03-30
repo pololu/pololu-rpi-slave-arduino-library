@@ -1,13 +1,13 @@
 #include <Servo.h>
-#include <AStar32U4.h>
+#include <Romi32U4.h>
 #include <PololuRPiSlave.h>
 
-/* This example program shows how to make the A-Star 32U4 Robot
- * Controller into a Raspberry Pi I2C slave.  The RPi and A-Star can
+/* This example program shows how to make the Romi 32U4 Control Board 
+ * into a Raspberry Pi I2C slave.  The RPi and Romi 32U4 Control Board can
  * exchange data bidirectionally, allowing each device to do what it
  * does best: high-level programming can be handled in a language such
- * as Python on the RPi, while the A-Star takes charge of motor
- * control, analog inputs, and other low-level I/O.
+ * as Python on the RPi, while the Romi 32U4 Control Board takes charge 
+ * of motor control, analog inputs, and other low-level I/O.
  *
  * The example and libraries are available for download at:
  *
@@ -35,17 +35,17 @@ struct Data
 
   bool playNotes;
   char notes[14];
-  
-  // Encoders are unused in this example.
+
   int16_t leftEncoder, rightEncoder;
 };
 
 PololuRPiSlave<struct Data,5> slave;
 PololuBuzzer buzzer;
-AStar32U4Motors motors;
-AStar32U4ButtonA buttonA;
-AStar32U4ButtonB buttonB;
-AStar32U4ButtonC buttonC;
+Romi32U4Motors motors;
+Romi32U4ButtonA buttonA;
+Romi32U4ButtonB buttonB;
+Romi32U4ButtonC buttonC;
+Romi32U4Encoders encoders;
 
 void setup()
 {
@@ -68,7 +68,7 @@ void loop()
   slave.buffer.buttonC = buttonC.isPressed();
 
   // Change this to readBatteryMillivoltsLV() for the LV model.
-  slave.buffer.batteryMillivolts = readBatteryMillivoltsSV();
+  slave.buffer.batteryMillivolts = readBatteryMillivolts();
 
   for(uint8_t i=0; i<6; i++)
   {
@@ -95,6 +95,9 @@ void loop()
     slave.buffer.playNotes = false;
     startedPlaying = false;
   }
+
+  slave.buffer.leftEncoder = encoders.getCountsLeft();
+  slave.buffer.rightEncoder = encoders.getCountsRight();
 
   // When you are done WRITING, call finalizeWrites() to make modified
   // data available to I2C master.
