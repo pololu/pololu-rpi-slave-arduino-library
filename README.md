@@ -12,8 +12,10 @@ This is an Arduino library that helps establish I<sup>2</sup>C communication wit
 a Raspberry Pi, with the Arduino acting as the I<sup>2</sup>C slave.  It should
 work with most Arduino-compatible boards, but we designed it for use
 with these Pololu products:
+
 * [A-Star 32U4 Robot Controller LV](https://www.pololu.com/product/3117) or [SV](https://www.pololu.com/product/3119)
 * [Romi 32U4 Control Board](https://www.pololu.com/product/3544)
+
 These boards are designed to connect conveniently to the Pi's GPIO header.  The
 idea is that the Raspberry Pi can take care of high-level tasks like video
 processing or network communication, while the AVR microcontroller takes care of
