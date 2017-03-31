@@ -7,6 +7,7 @@ cache:
 install:
 - pip install -U platformio
 - platformio lib install 622 # http://platformio.org/lib/show/622/AStar32U4
+- platformio lib install 1481 # http://platformio.org/lib/show/1481/Romi32U4
 
 env:
 - BOARD=leonardo
