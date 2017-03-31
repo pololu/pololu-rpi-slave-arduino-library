@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
 from flask import Flask
