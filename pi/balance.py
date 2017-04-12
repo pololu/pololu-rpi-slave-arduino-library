@@ -1,6 +1,9 @@
 import time
 import threading
 
+from a_star import AStar
+from lsm6 import LSM6
+
 # This code was developed for a Balboa unit using 50:1 motors
 # and 45:21 plastic gears, for an overall gear ratio of 111.
 # Adjust the ratio below to scale various constants in the
@@ -43,7 +46,7 @@ ANGLE_RATE_RATIO = 140
 # moving in the same direction, usually driving faster and
 # faster until it reaches its maximum motor speed and falls
 # over.  That's where the next constants come in.
-ANGLE_RESPONSE = 16
+ANGLE_RESPONSE = 12
 
 # DISTANCE_RESPONSE determines how much the robot resists being
 # moved away from its starting point.  Counterintuitively, this
@@ -52,7 +55,7 @@ ANGLE_RESPONSE = 16
 # forwards.  When this constant is adjusted properly, the robot
 # will no longer zoom off in one direction, but it will drive
 # back and forth a few times before falling down.
-DISTANCE_RESPONSE = 73
+DISTANCE_RESPONSE = 90
 
 # DISTANCE_DIFF_RESPONSE determines the response to differences
 # between the left and right motors, preventing undesired
@@ -78,10 +81,9 @@ UPDATE_TIME = 0.01
 CALIBRATION_ITERATIONS = 100
 
 class Balancer:
-  def __init__(self, a_star, imu, i2c_lock):
-    self.a_star = a_star
-    self.imu = imu
-    self.i2c_lock = i2c_lock
+  def __init__(self):
+    self.a_star = AStar()
+    self.imu = LSM6()
 
     self.g_y_zero = 0
     self.angle = 0 # degrees
@@ -95,50 +97,91 @@ class Balancer:
     self.drive_right = 0
     self.last_counts_right = 0
     self.motor_speed = 0
-    self.is_balancing = False
-
+    self.balancing = False
+    self.calibrated = False
+    self.running = False
     self.next_update = 0
-    self.update_thread = threading.Thread(target=self.update_loop, daemon=True)
+    self.update_thread = None
 
-  def calibrate(self):
+  def setup(self):
     self.imu.enable()
     time.sleep(1) # wait for IMU readings to stabilize
 
     # calibrate the gyro
     total = 0
     for _ in range(CALIBRATION_ITERATIONS):
-      self.i2c_lock.acquire()
       self.imu.read()
-      self.i2c_lock.release()
       total += self.imu.g.y
       time.sleep(0.001)
     self.g_y_zero = total / CALIBRATION_ITERATIONS
+    self.calibrated = True
 
   def start(self):
-    self.next_update = time.clock_gettime(time.CLOCK_MONOTONIC_RAW)
-    self.update_thread.start()
+    if self.calibrated:
+      if not self.running:
+        self.running = True
+        self.next_update = time.clock_gettime(time.CLOCK_MONOTONIC_RAW)
+        self.update_thread = threading.Thread(target=self.update_loop, daemon=True)
+        self.update_thread.start()
+    else:
+      raise RuntimeError("IMU not enabled/calibrated; can't start balancer")
+
+  def stop(self):
+    if self.running:
+      self.running = False
+      self.update_thread.join()
+
+  def stand_up(self):
+    if self.calibrated:
+      sign = 1
+
+      if self.imu.a.z < 0:
+        sign = -1
+
+      self.stop()
+      self.reset()
+      self.imu.read()
+      self.a_star.motors(-sign*MOTOR_SPEED_LIMIT, -sign*MOTOR_SPEED_LIMIT)
+      time.sleep(0.4)
+      self.a_star.motors(sign*MOTOR_SPEED_LIMIT, sign*MOTOR_SPEED_LIMIT)
+
+      for _ in range(40):
+        time.sleep(UPDATE_TIME)
+        self.update_sensors()
+        print(self.angle)
+        if abs(self.angle) < 60:
+          break
+
+      self.motor_speed = sign*MOTOR_SPEED_LIMIT
+      self.reset_encoders()
+      self.start()
+    else:
+      raise RuntimeError("IMU not enabled/calibrated; can't stand up")
+
 
   def update_loop(self):
-    while True:
+    while self.running:
       self.update_sensors()
       self.do_drive_ticks()
 
-      if self.imu.a.x < 4000: # about 0.25 g = about 75 degrees from vertical
+      if self.imu.a.x < 2000:
+        # If X acceleration is low, the robot is probably close to horizontal.
         self.reset()
-        self.is_balancing = False
+        self.balancing = False
       else:
         self.balance()
-        self.is_balancing = True
+        self.balancing = True
 
       # Perform the balance updates at 100 Hz.
       self.next_update += UPDATE_TIME
       now = time.clock_gettime(time.CLOCK_MONOTONIC_RAW)
       time.sleep(max(self.next_update - now, 0))
 
+    # stop() has been called and the loop has exited. Stop the motors.
+    self.a_star.motors(0, 0) 
+
   def update_sensors(self):
-    self.i2c_lock.acquire()
     self.imu.read()
-    self.i2c_lock.release()
     self.integrate_gyro()
     self.integrate_encoders()
 
@@ -149,9 +192,7 @@ class Balancer:
     self.angle += self.angle_rate * UPDATE_TIME
 
   def integrate_encoders(self):
-    self.i2c_lock.acquire()
     (counts_left, counts_right) = self.a_star.read_encoders()
-    self.i2c_lock.release()
 
     self.speed_left = subtract_16_bit(counts_left, self.last_counts_left)
     self.distance_left += self.speed_left
@@ -161,6 +202,10 @@ class Balancer:
     self.distance_right += self.speed_right
     self.last_counts_right = counts_right
 
+  def drive(self, left_speed, right_speed):
+    self.drive_left = left_speed
+    self.drive_right = right_speed
+
   def do_drive_ticks(self):
     self.distance_left -= self.drive_left
     self.distance_right -= self.drive_right
@@ -169,11 +214,8 @@ class Balancer:
 
   def reset(self):
     self.motor_speed = 0
-    self.distance_left = 0
-    self.distance_right = 0
-    self.i2c_lock.acquire()
+    self.reset_encoders()
     self.a_star.motors(0, 0)
-    self.i2c_lock.release()
 
     if abs(self.angle_rate) < 2:
       # It's really calm, so assume the robot is resting at 110 degrees from vertical.
@@ -181,6 +223,10 @@ class Balancer:
         self.angle = 110
       else:
         self.angle = -110
+
+  def reset_encoders(self):
+    self.distance_left = 0
+    self.distance_right = 0
 
   def balance(self):
     # Adjust toward angle=0 with timescale ~10s, to compensate for
@@ -226,11 +272,9 @@ class Balancer:
     # robot to perform controlled turns.
     distance_diff = self.distance_left - self.distance_right
     
-    self.i2c_lock.acquire()
     self.a_star.motors(
       int(self.motor_speed + distance_diff * DISTANCE_DIFF_RESPONSE / 100),
       int(self.motor_speed - distance_diff * DISTANCE_DIFF_RESPONSE / 100))
-    self.i2c_lock.release()
 
 def subtract_16_bit(a, b):
   diff = (a - b) & 0xFFFF

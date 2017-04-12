@@ -5,11 +5,14 @@ from flask import Flask
 from flask import render_template
 from flask import redirect
 from subprocess import call
-app = Flask(__name__, static_folder='server_resources/static', template_folder='server_resources/templates')
+app = Flask(__name__, static_folder='server_balboa_resources/static', template_folder='server_balboa_resources/templates')
 app.debug = True
 
 from a_star import AStar
 a_star = AStar()
+
+from balance import Balancer
+balancer = Balancer()
 
 import json
 
@@ -27,17 +30,30 @@ def status():
     analog = a_star.read_analog()
     battery_millivolts = a_star.read_battery_millivolts()
     encoders = a_star.read_encoders()
+    calibrated = balancer.calibrated
     data = {
         "buttons": buttons,
         "battery_millivolts": battery_millivolts,
         "analog": analog,
-        "encoders": encoders
+        "encoders": encoders,
+        "calibrated": calibrated
     }
     return json.dumps(data)
 
-@app.route("/motors/<left>,<right>")
-def motors(left, right):
-    a_star.motors(int(left), int(right))
+@app.route("/calibrate")
+def calibrate():
+    balancer.setup()
+    balancer.start()
+    return ""
+
+@app.route("/stand_up")
+def stand_up():
+    balancer.stand_up()
+    return ""
+
+@app.route("/drive/<left>,<right>")
+def drive(left, right):
+    balancer.drive(int(left), int(right))
     return ""
 
 @app.route("/leds/<int:led0>,<int:led1>,<int:led2>")

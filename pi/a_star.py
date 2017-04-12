@@ -2,14 +2,21 @@
 import smbus
 import struct
 import time
+import threading
+
+SLAVE_ADDRESS = 20
 
 class AStar:
+  # This lock allows multiple threads in a program to use their own AStar
+  # instances without interfering with each other's I2C communications.
+  lock = threading.Lock()
+
   def __init__(self):
     self.bus = smbus.SMBus(1)
 
   def read_unpack(self, address, size, format):
     # Ideally we could do this:
-    #    byte_list = self.bus.read_i2c_block_data(20, address, size)
+    #    byte_list = self.bus.read_i2c_block_data(SLAVE_ADDRESS, address, size)
     # But the AVR's TWI module can't handle a quick write->read transition,
     # since the STOP interrupt will occasionally happen after the START
     # condition, and the TWI module is disabled until the interrupt can
@@ -17,16 +24,19 @@ class AStar:
     #
     # A delay of 0.0001 (100 us) after each write is enough to account
     # for the worst-case situation in our example code.
-
-    self.bus.write_byte(20, address)
+    AStar.lock.acquire()
+    self.bus.write_byte(SLAVE_ADDRESS, address)
     time.sleep(0.0001)
-    byte_list = [self.bus.read_byte(20) for _ in range(size)]
+    byte_list = [self.bus.read_byte(SLAVE_ADDRESS) for _ in range(size)]
+    AStar.lock.release()
     return struct.unpack(format, bytes(byte_list))
 
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
-    self.bus.write_i2c_block_data(20, address, data_array)
+    AStar.lock.acquire()
+    self.bus.write_i2c_block_data(SLAVE_ADDRESS, address, data_array)
     time.sleep(0.0001)
+    AStar.lock.release()
 
   def leds(self, red, yellow, green):
     self.write_pack(0, 'BBB', red, yellow, green)
@@ -53,5 +63,7 @@ class AStar:
     self.read_unpack(0, 8, 'cccccccc')
 
   def test_write8(self):
-    self.bus.write_i2c_block_data(20, 0, [0,0,0,0,0,0,0,0])
+    AStar.lock.acquire()
+    self.bus.write_i2c_block_data(SLAVE_ADDRESS, 0, [0,0,0,0,0,0,0,0])
     time.sleep(0.0001)
+    AStar.lock.release()
