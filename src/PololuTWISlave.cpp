@@ -87,4 +87,6 @@ uint8_t PololuTWISlave::handleEvent(uint8_t event)
       PololuTWISlave::clearBusError();
       break;
   }
+    
+  return 0; //what should we be returning?
 }
