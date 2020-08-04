@@ -32,7 +32,7 @@ class AStar:
     self.write_pack(0, 'BBB', red, yellow, green)
 
   def play_notes(self, notes):
-    self.write_pack(24, 'B15s', 1, notes.encode("ascii"))
+    self.write_pack(24, 'B14s', 1, notes.encode("ascii"))
 
   def motors(self, left, right):
     self.write_pack(6, 'hh', left, right)
