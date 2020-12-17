@@ -2,7 +2,6 @@
 
 Version: 2.0.0<br>
 Release date: 2017 March 31<br>
-[![Build Status](https://travis-ci.org/pololu/pololu-rpi-slave-arduino-library.svg?branch=master)](https://travis-ci.org/pololu/pololu-rpi-slave-arduino-library)<br>
 [www.pololu.com](https://www.pololu.com/)
 
 Summary

@@ -1,0 +1,8 @@
+only_boards:
+  - arduino:avr:leonardo
+  - arduino:avr:micro
+  - arduino:avr:yun
+library_archives:
+  - AStar32U4=https://github.com/pololu/a-star-32u4-arduino-library/archive/1.1.1.tar.gz=1zbjki39jqs77kz7vdd42v1ydz3yvbidccn1j4qbwij6fgyjvgyn
+  - Romi32U4=https://github.com/pololu/romi-32u4-arduino-library/archive/1.0.2.tar.gz=19d06h6lnv3k8yyxqn2qfh7jcc1gqzipddrg6jvdlxil1sji9q1s
+  - Servo=https://github.com/arduino-libraries/Servo/archive/1.1.7.tar.gz=1z7396n16f3pg314sg06cgbi1zqd0qq6w7jr89f2qwmpg9hj7w4x
